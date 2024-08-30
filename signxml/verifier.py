@@ -1,6 +1,6 @@
 from base64 import b64decode
 from dataclasses import dataclass, replace
-from typing import Callable, FrozenSet, List, Optional, Tuple, Union
+from typing import Callable, FrozenSet, List, Optional, Union
 from warnings import warn
 
 import cryptography.exceptions
@@ -410,11 +410,9 @@ class XMLVerifier(XMLSignatureProcessor):
         if x509_cert and str(type(x509_cert)) == "<class 'OpenSSL.crypto.X509'>":
             warn(
                 "SignXML received a PyOpenSSL object as x509_cert input. Please pass a Cryptography.X509 object instead.",
-                DeprecationWarning,
+                DeprecationWarning
             )
-            x509_cert = x509_cert.to_cryptography()  # type: ignore[union-attr]
-
-        self.x509_cert = x509_cert
+            x509_cert = x509_cert.to_cryptography()
 
         if id_attribute is not None:
             self.id_attributes = (id_attribute,)
