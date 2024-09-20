@@ -303,7 +303,7 @@ class XMLVerifier(XMLSignatureProcessor):
         cert_subject_name: Optional[str] = None,
         cert_resolver: Optional[Callable] = None,
         ca_pem_file: Optional[Union[str, bytes]] = None,
-        hmac_key: Optional[bytes] = None,
+        hmac_key: Optional[str] = None,
         validate_schema: bool = True,
         parser=None,
         uri_resolver: Optional[Callable] = None,
@@ -333,7 +333,7 @@ class XMLVerifier(XMLSignatureProcessor):
              from signxml import XMLVerifier, SignatureConfiguration
              config = SignatureConfiguration(location="./")
              XMLVerifier(...).verify(..., expect_config=config)
-
+        
          Depending on the canonicalization method used by the signature, comments in the XML data may not be subject to
          signing, so may need to be untrusted. If so, they are excised from the return value of ``verify()``.
 
