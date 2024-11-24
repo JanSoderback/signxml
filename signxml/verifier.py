@@ -414,6 +414,8 @@ class XMLVerifier(XMLSignatureProcessor):
             )
             x509_cert = x509_cert.to_cryptography()  # type: ignore[union-attr]
 
+        self.x509_cert = x509_cert
+
         if id_attribute is not None:
             self.id_attributes = (id_attribute,)
 
