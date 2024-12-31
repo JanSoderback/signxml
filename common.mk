@@ -32,10 +32,6 @@ release:
 	gh release create ${TAG} dist/*.whl --notes="$$(git tag --list ${TAG} -n99 | perl -pe 's/^\S+\s*// if $$. == 1' | sed 's/^\s\s\s\s//')"
 	$(MAKE) release-docs
 
-release-pypi:
-	python -m build
-	twine upload dist/*.tar.gz dist/*.whl --verbose
-
 release-docs:
 	$(MAKE) docs
 	-git branch -D gh-pages
