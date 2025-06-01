@@ -1,6 +1,6 @@
 from base64 import b64decode
 from dataclasses import dataclass, replace
-from typing import Callable, FrozenSet, List, Optional, Union
+from typing import Callable, FrozenSet, List, Optional, Union, Tuple
 from warnings import warn
 
 import cryptography.exceptions
@@ -8,7 +8,8 @@ from cryptography import x509
 from cryptography.hazmat.primitives.asymmetric import dsa, ec, rsa, utils
 from cryptography.hazmat.primitives.asymmetric.padding import MGF1, PSS, AsymmetricPadding, PKCS1v15
 from cryptography.hazmat.primitives.hmac import HMAC
-from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat, load_der_public_key
+from cryptography.hazmat.primitives.serialization import load_der_public_key, Encoding, PublicFormat
+
 from lxml import etree
 
 from .algorithms import (
@@ -140,7 +141,7 @@ class XMLVerifier(XMLSignatureProcessor):
         key_value: Optional[etree._Element] = None,
         der_encoded_key_value: Optional[etree._Element] = None,
         signing_certificate: Optional[x509.Certificate] = None,
-    ) -> Tuple[bytes, Union[bytes, dsa.DSAPublicKey, rsa.RSAPublicKey, ec.EllipticCurvePublicKey]]:
+    ) -> Tuple[bytes, bytes | dsa.DSAPublicKey | rsa.RSAPublicKey | ec.EllipticCurvePublicKey]:
         if der_encoded_key_value is not None:
             assert der_encoded_key_value.text is not None
             key = load_der_public_key(b64decode(der_encoded_key_value.text))
@@ -303,7 +304,7 @@ class XMLVerifier(XMLSignatureProcessor):
         cert_subject_name: Optional[str] = None,
         cert_resolver: Optional[Callable] = None,
         ca_pem_file: Optional[Union[str, bytes]] = None,
-        hmac_key: Optional[str] = None,
+        hmac_key: Optional[bytes] = None,
         validate_schema: bool = True,
         parser=None,
         uri_resolver: Optional[Callable] = None,
@@ -541,16 +542,7 @@ class XMLVerifier(XMLSignatureProcessor):
             else verify_results
         )
 
-    def _verify_reference(
-        self,
-        reference,
-        index,
-        root,
-        uri_resolver,
-        c14n_algorithm,
-        signature,
-        signature_key_used,
-    ):
+    def _verify_reference(self, reference, index, root, uri_resolver, c14n_algorithm, signature, signature_key_used):
         copied_root = self._fromstring(self._tostring(root))
         copied_signature_ref = self._get_signature(copied_root)
         transforms = self._find(reference, "Transforms", require=False)
