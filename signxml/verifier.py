@@ -541,7 +541,16 @@ class XMLVerifier(XMLSignatureProcessor):
             else verify_results
         )
 
-    def _verify_reference(self, reference, index, root, uri_resolver, c14n_algorithm, signature, signature_key_used):
+    def _verify_reference(
+        self,
+        reference,
+        index,
+        root,
+        uri_resolver,
+        c14n_algorithm,
+        signature,
+        signature_key_used,
+    ):
         copied_root = self._fromstring(self._tostring(root))
         copied_signature_ref = self._get_signature(copied_root)
         transforms = self._find(reference, "Transforms", require=False)

@@ -384,17 +384,21 @@ class XMLSigner(XMLSignatureProcessor):
             references = [SignatureReference(URI="#object")]
         return sig_root, doc_root, c14n_inputs, references
 
-    def _build_transforms_for_reference(self, *, transforms_node: _Element, reference: SignatureReference):
+    def _build_transforms_for_reference(
+        self, *, transforms_node: _Element, reference: SignatureReference, exclude_c14n_transform_element: bool = True
+    ):
         assert reference.c14n_method is not None
         if self.construction_method == SignatureConstructionMethod.enveloped:
             SubElement(transforms_node, ds_tag("Transform"), Algorithm=SignatureConstructionMethod.enveloped.value)
-            SubElement(transforms_node, ds_tag("Transform"), Algorithm=reference.c14n_method.value)
+            if not exclude_c14n_transform_element:
+                SubElement(transforms_node, ds_tag("Transform"), Algorithm=reference.c14n_method.value)
         else:
-            c14n_xform = SubElement(
-                transforms_node,
-                ds_tag("Transform"),
-                Algorithm=reference.c14n_method.value,
-            )
+            if not exclude_c14n_transform_element:
+                c14n_xform = SubElement(
+                    transforms_node,
+                    ds_tag("Transform"),
+                    Algorithm=reference.c14n_method.value,
+                )
             if reference.inclusive_ns_prefixes:
                 SubElement(
                     c14n_xform, ec_tag("InclusiveNamespaces"), PrefixList=" ".join(reference.inclusive_ns_prefixes)
